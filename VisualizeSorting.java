@@ -5,12 +5,12 @@ public class VisualizeSorting extends JFrame
 {
     static Color bgc = new Color(0,0,0);
     static VisualizeSorting gui = new VisualizeSorting();
-    static int width = 600;
+    static int width = 900;
     static int height = 900;
     Image doubleBufferImg;
     Graphics doubleBufferGraphics;
     private static final long serialVersionUID = 1L;
-    static holder[] sortMe = new holder[50];
+    static holder[] sortMe = new holder[300];
     static int randomNumber(int max, int min)
     {
         Random random = new Random();
@@ -71,12 +71,28 @@ public class VisualizeSorting extends JFrame
                         sortMe[i+1].setChecked(true);
                         isSorted = false;
                         gui.repaint();
-                        Thread.sleep(15);
+                        Thread.sleep(1);
                     }
                     sortMe[i].setChecked(false);
                     sortMe[i+1].setChecked(false);
                 }
             }
+        }
+        doneSorting();
+    }
+    public static void doneSorting() throws InterruptedException
+    {
+        for(int i = 0; i < sortMe.length; i++)
+        {
+            sortMe[i].setEndCheck(true);
+            gui.repaint();
+            Thread.sleep(1);
+        }
+        for(int i = 0; i < sortMe.length; i++)
+        {
+            sortMe[i].setEndCheck(false);
+            gui.repaint();
+            Thread.sleep(1);
         }
     }
     public void paintComponent(Graphics g)
@@ -95,7 +111,14 @@ public class VisualizeSorting extends JFrame
             }
             else
             {
-                currentColor = new Color(155,155,155);
+                if(sortMe[i].getEndCheck() == true)
+                {
+                    currentColor = new Color(0,255,0);
+                }
+                else
+                {
+                    currentColor = new Color(155,155,155);
+                }
             }
             g.setColor(currentColor);
             g.fillRect(sortMe[i].getX(),height-sortMe[i].getHeight(),sortMe[i].getWidth(),sortMe[i].getHeight());
@@ -117,10 +140,19 @@ public class VisualizeSorting extends JFrame
 class holder
 {
     boolean checked = false;
+    boolean endCheck = false;
     int x = 0;
     int y = 0;
     int width = 0;
     int height = 0;
+    boolean getEndCheck()
+    {
+        return endCheck;
+    }
+    void setEndCheck(boolean endCheck)
+    {
+        this.endCheck = endCheck;
+    }
     boolean getChecked()
     {
         return checked;
