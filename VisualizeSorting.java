@@ -3,14 +3,21 @@ import javax.swing.*;
 import java.awt.*;
 public class VisualizeSorting extends JFrame
 {
+    static int biggestLoop = 0;
+    static int avgLoops = 0;
+    static int avgLoopsStep = 0;
+    static int comparisons = 0;
+    static int loops = 0;
+    static int amountOfRuns = 0;
     static Color bgc = new Color(0,0,0);
     static VisualizeSorting gui = new VisualizeSorting();
     static int width = 900;
-    static int height = 900;
+    static int height = 1000;
+    static int delay = 5;
     Image doubleBufferImg;
     Graphics doubleBufferGraphics;
     private static final long serialVersionUID = 1L;
-    static holder[] sortMe = new holder[300];
+    static holder[] sortMe = new holder[100];
     static int randomNumber(int max, int min)
     {
         Random random = new Random();
@@ -27,12 +34,35 @@ public class VisualizeSorting extends JFrame
             sortMe[i] = new holder();
         }
     }
+    static void check() throws InterruptedException
+    {
+        for(int i = 0; i < sortMe.length; i++)
+        {
+            if(i+1 < sortMe.length)
+            {
+                if(sortMe[i].getHeight() < sortMe[i+1].getHeight())
+                {
+                    sortMe[i].setEndCheck(true);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            gui.repaint();
+            Thread.sleep(delay);
+        }
+        for(int i = 0; i < sortMe.length; i++)
+        {
+            sortMe[i].setEndCheck(false);
+        }
+    }
     static void generate()
     {
         int x = 0;
         for(int i = 0; i < sortMe.length; i++)
         {
-            sortMe[i].setHeight(randomNumber(height,50));
+            sortMe[i].setHeight(randomNumber(height-100,50));
             sortMe[i].setWidth(width/sortMe.length);
             sortMe[i].setX(x);
             x = x+sortMe[i].getWidth();
@@ -45,11 +75,19 @@ public class VisualizeSorting extends JFrame
         initialize();
         while(!(scan.next().equalsIgnoreCase("exit")))
         {
+            loops = 0;
+            comparisons = 0;
             generate();
             bubbleSort();
             gui.repaint();
+            avgLoopsStep += loops;
+            amountOfRuns++;
+            avgLoops = avgLoopsStep / amountOfRuns;
+            if(loops > biggestLoop)
+            {
+                biggestLoop = loops;
+            }
         }
-
     }
     public static void bubbleSort() throws InterruptedException  
     {
@@ -60,10 +98,12 @@ public class VisualizeSorting extends JFrame
             isSorted = true;
             for(int i = 0; i < sortMe.length; i++)
             {
+                loops++;
                 if(i+1 < sortMe.length)
                 {
                     if(sortMe[i+1].getHeight() < sortMe[i].getHeight())
                     {
+                        comparisons++;
                         savedVal = sortMe[i+1].getHeight();
                         sortMe[i+1].setHeight(sortMe[i].getHeight());
                         sortMe[i].setHeight(savedVal);
@@ -71,12 +111,13 @@ public class VisualizeSorting extends JFrame
                         sortMe[i+1].setChecked(true);
                         isSorted = false;
                         gui.repaint();
-                        Thread.sleep(1);
+                        Thread.sleep(delay);
                     }
                     sortMe[i].setChecked(false);
                     sortMe[i+1].setChecked(false);
                 }
             }
+            check();
         }
         doneSorting();
     }
@@ -86,13 +127,13 @@ public class VisualizeSorting extends JFrame
         {
             sortMe[i].setEndCheck(true);
             gui.repaint();
-            Thread.sleep(1);
+            Thread.sleep(delay);
         }
         for(int i = 0; i < sortMe.length; i++)
         {
             sortMe[i].setEndCheck(false);
             gui.repaint();
-            Thread.sleep(1);
+            Thread.sleep(delay);
         }
     }
     public void paintComponent(Graphics g)
@@ -126,6 +167,11 @@ public class VisualizeSorting extends JFrame
             currentColor = new Color(0,0,0);
             g.setColor(currentColor);
             g.drawRect(sortMe[i].getX(),height-sortMe[i].getHeight(),sortMe[i].getWidth(),sortMe[i].getHeight());
+            g.drawString("Loops needed: "+loops,20,50);
+            g.drawString("Delay "+delay+" ms",20,70);
+            g.drawString("Average Amount of Loops: "+avgLoops,200,50);
+            g.drawString("Comparisons: "+comparisons,200,70);
+            g.drawString("Longest Sort (amount of loops): "+biggestLoop,20,90);
         }
     }
     @Override
