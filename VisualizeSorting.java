@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 public class VisualizeSorting extends JFrame
 {
+    static int arrayAccesses = 0;
     static int biggestLoop = 0;
     static int avgLoops = 0;
     static int avgLoopsStep = 0;
@@ -11,13 +12,13 @@ public class VisualizeSorting extends JFrame
     static int amountOfRuns = 0;
     static Color bgc = new Color(0,0,0);
     static VisualizeSorting gui = new VisualizeSorting();
-    static int width = 900;
+    static int width = 1800;
     static int height = 1000;
-    static int delay = 5;
+    static int delay = 1;
     Image doubleBufferImg;
     Graphics doubleBufferGraphics;
     private static final long serialVersionUID = 1L;
-    static holder[] sortMe = new holder[100];
+    static holder[] sortMe = new holder[600];
     static int randomNumber(int max, int min)
     {
         Random random = new Random();
@@ -109,6 +110,7 @@ public class VisualizeSorting extends JFrame
                         sortMe[i].setHeight(savedVal);
                         sortMe[i].setChecked(true);
                         sortMe[i+1].setChecked(true);
+                        arrayAccesses += 3;
                         isSorted = false;
                         gui.repaint();
                         Thread.sleep(delay);
@@ -172,6 +174,7 @@ public class VisualizeSorting extends JFrame
             g.drawString("Average Amount of Loops: "+avgLoops,200,50);
             g.drawString("Comparisons: "+comparisons,200,70);
             g.drawString("Longest Sort (amount of loops): "+biggestLoop,20,90);
+            g.drawString("Array Accesses: "+arrayAccesses, 400,50);
         }
     }
     @Override
